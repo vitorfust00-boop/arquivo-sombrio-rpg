@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel do Mestre — Arquivo Sombrio</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    background:
+        radial-gradient(circle at top, #291321, #08070b 70%);
+
+    color: white;
+
+    font-family: Arial, sans-serif;
+
+}
+
+header {
+
+    padding: 20px;
+
+    background: #100b12;
+
+    border-bottom: 1px solid #533148;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+.container {
+
+    width: 94%;
+
+    max-width: 1200px;
+
+    margin: 25px auto;
+
+}
+
+.card {
+
+    background: #151017;
+
+    border: 1px solid #493052;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    margin-bottom: 15px;
+
+}
+
+.usuario {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+
+}
+
+.nome {
+
+    font-size: 19px;
+
+    font-weight: bold;
+
+}
+
+.email {
+
+    color: #aaa;
+
+    margin-top: 5px;
+
+}
+
+button {
+
+    padding: 10px 15px;
+
+    border: 0;
+
+    border-radius: 7px;
+
+    background: #743d91;
+
+    color: white;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+button:hover {
+
+    background: #8d4fad;
+
+}
+
+#detalhes {
+
+    display: none;
+
+}
+
+.grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(150px, 1fr));
+
+    gap: 10px;
+
+}
+
+.stat {
+
+    background: #0d0a10;
+
+    border: 1px solid #3d2945;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+}
+
+pre {
+
+    white-space: pre-wrap;
+
+    word-break: break-word;
+
+    color: #ccc;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<strong>
+☾ ARQUIVO SOMBRIO — MESTRE
+</strong>
+
+<button id="sair">
+SAIR
+</button>
+
+</header>
+
+<div class="container">
+
+<h1>Jogadores</h1>
+
+<div id="usuarios">
+
+Carregando jogadores...
+
+</div>
+
+<div class="card" id="detalhes">
+
+<h2 id="nomeFicha">
+Ficha
+</h2>
+
+<div class="grid">
+
+<div class="stat">
+<strong>PV</strong>
+<div id="pv"></div>
+</div>
+
+<div class="stat">
+<strong>Sanidade</strong>
+<div id="sanidade"></div>
+</div>
+
+<div class="stat">
+<strong>Defesa</strong>
+<div id="defesa"></div>
+</div>
+
+<div class="stat">
+<strong>Nível</strong>
+<div id="nivel"></div>
+</div>
+
+<div class="stat">
+<strong>Origem</strong>
+<div id="origem"></div>
+</div>
+
+</div>
+
+<h3>Atributos</h3>
+
+<div class="grid">
+
+<div class="stat">FOR: <span id="FOR"></span></div>
+<div class="stat">AGI: <span id="AGI"></span></div>
+<div class="stat">VIG: <span id="VIG"></span></div>
+<div class="stat">INT: <span id="INT"></span></div>
+<div class="stat">PER: <span id="PER"></span></div>
+<div class="stat">VON: <span id="VON"></span></div>
+
+</div>
+
+<h3>Personalidade</h3>
+<pre id="personalidade"></pre>
+
+<h3>História</h3>
+<pre id="historia"></pre>
+
+<h3>Objetivo</h3>
+<pre id="objetivo"></pre>
+
+<h3>Medo</h3>
+<pre id="medo"></pre>
+
+<h3>Poderes</h3>
+<pre id="poderes"></pre>
+
+<h3>Preço do Pacto</h3>
+<pre id="preco"></pre>
+
+<h3>Habilidades</h3>
+<pre id="habilidades"></pre>
+
+<h3>Equipamentos</h3>
+<pre id="equipamentos"></pre>
+
+</div>
+
+</div>
+
+<script type="module">
+
+import {
+
+    auth,
+    db,
+
+    collection,
+    getDocs,
+    doc,
+    getDoc,
+
+    onAuthStateChanged,
+    signOut
+
+} from "./firebase.js";
+
+
+// ==========================================
+// IMPORTANTE
+// ==========================================
+//
+// COLOQUE AQUI O E-MAIL DA CONTA DO MESTRE.
+//
+// Esse bloqueio é apenas do frontend.
+// As regras do Firestore também precisam
+// proteger os dados.
+// ==========================================
+
+const EMAIL_MESTRE =
+    "SEU_EMAIL_DE_MESTRE@EMAIL.COM";
+
+
+let usuarioAtual = null;
+
+
+onAuthStateChanged(auth, async usuario => {
+
+    if (!usuario) {
+
+        window.location.href = "login.html";
+
+        return;
+
+    }
+
+    usuarioAtual = usuario;
+
+    if (usuario.email !== EMAIL_MESTRE) {
+
+        alert(
+            "Você não possui acesso ao painel do mestre."
+        );
+
+        await signOut(auth);
+
+        window.location.href = "login.html";
+
+        return;
+
+    }
+
+    carregarUsuarios();
+
+});
+
+
+async function carregarUsuarios() {
+
+    const container =
+        document.getElementById("usuarios");
+
+    container.innerHTML =
+        "Carregando jogadores...";
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "usuarios")
+            );
+
+        container.innerHTML = "";
+
+        if (snapshot.empty) {
+
+            container.innerHTML =
+                "<p>Nenhum jogador cadastrado.</p>";
+
+            return;
+
+        }
+
+        snapshot.forEach(documento => {
+
+            const usuario =
+                documento.data();
+
+            const div =
+                document.createElement("div");
+
+            div.className = "card";
+
+            div.innerHTML = `
+
+                <div class="usuario">
+
+                    <div>
+
+                        <div class="nome">
+                            ${escapeHTML(
+                                usuario.nome || "Sem nome"
+                            )}
+                        </div>
+
+                        <div class="email">
+                            ${escapeHTML(
+                                usuario.email || ""
+                            )}
+                        </div>
+
+                    </div>
+
+                    <button>
+                        VER FICHA
+                    </button>
+
+                </div>
+
+            `;
+
+            div.querySelector("button")
+                .onclick = () =>
+                    abrirFicha(documento.id);
+
+            container.appendChild(div);
+
+        });
+
+    } catch (erro) {
+
+        container.innerHTML =
+            "Erro ao carregar jogadores: " +
+            erro.message;
+
+    }
+
+}
+
+
+async function abrirFicha(uid) {
+
+    const resultado =
+        await getDoc(
+            doc(db, "fichas", uid)
+        );
+
+    if (!resultado.exists()) {
+
+        alert(
+            "Este jogador ainda não possui ficha."
+        );
+
+        return;
+
+    }
+
+    const ficha =
+        resultado.data();
+
+    document.getElementById("detalhes")
+        .style.display = "block";
+
+    document.getElementById("nomeFicha")
+        .textContent =
+        ficha.nome || "Ficha";
+
+    document.getElementById("pv")
+        .textContent =
+        `${ficha.PVAtual ?? 0} / ${ficha.PVMax ?? 0}`;
+
+    document.getElementById("sanidade")
+        .textContent =
+        `${ficha.sanidadeAtual ?? 0} / ${ficha.sanidadeMax ?? 0}`;
+
+    document.getElementById("defesa")
+        .textContent =
+        ficha.defesa ?? 0;
+
+    document.getElementById("nivel")
+        .textContent =
+        ficha.nivel ?? 1;
+
+    document.getElementById("origem")
+        .textContent =
+        ficha.origemMagia || "Sem magia";
+
+
+    const atributos =
+        ficha.atributos || {};
+
+    [
+        "FOR",
+        "AGI",
+        "VIG",
+        "INT",
+        "PER",
+        "VON"
+    ].forEach(attr => {
+
+        document.getElementById(attr)
+            .textContent =
+            atributos[attr] ?? 0;
+
+    });
+
+
+    document.getElementById("personalidade")
+        .textContent =
+        ficha.personalidade || "";
+
+    document.getElementById("historia")
+        .textContent =
+        ficha.historia || "";
+
+    document.getElementById("objetivo")
+        .textContent =
+        ficha.objetivo || "";
+
+    document.getElementById("medo")
+        .textContent =
+        ficha.medo || "";
+
+    document.getElementById("poderes")
+        .textContent =
+        ficha.poderes || "";
+
+    document.getElementById("preco")
+        .textContent =
+        ficha.precoPacto || "";
+
+    document.getElementById("habilidades")
+        .textContent =
+        ficha.habilidades || "";
+
+    document.getElementById("equipamentos")
+        .textContent =
+        ficha.equipamentos || "";
+
+
+    document.getElementById("detalhes")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
+
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+document.getElementById("sair")
+    .onclick = async () => {
+
+        await signOut(auth);
+
+        window.location.href =
+            "login.html";
+
+    };
+
+</script>
+
+</body>
+</html>
