@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ficha — Arquivo Sombrio</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    background:
+        radial-gradient(circle at top, #211529, #08070b 65%);
+
+    color: #eee;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    padding: 20px;
+
+    background: #100c14;
+
+    border-bottom: 1px solid #4e315b;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+header button {
+    background: #5e2930;
+}
+
+.container {
+    width: 94%;
+    max-width: 1100px;
+
+    margin: 25px auto;
+}
+
+.card {
+    background: rgba(20,16,25,.95);
+
+    border: 1px solid #493052;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-top: 0;
+
+    color: #c67bea;
+
+    border-bottom: 1px solid #3e2947;
+
+    padding-bottom: 10px;
+}
+
+.grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+
+    gap: 12px;
+}
+
+label {
+    color: #aaa;
+    font-size: 13px;
+}
+
+input,
+textarea,
+select {
+
+    width: 100%;
+
+    margin-top: 6px;
+
+    padding: 11px;
+
+    background: #0d0a10;
+
+    color: white;
+
+    border: 1px solid #493052;
+
+    border-radius: 7px;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+button {
+
+    border: 0;
+
+    padding: 11px 16px;
+
+    border-radius: 8px;
+
+    background: #743d91;
+
+    color: white;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+button:hover {
+    background: #8d4fad;
+}
+
+.attribute {
+
+    text-align: center;
+
+    background: #100c14;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    border: 1px solid #3e2947;
+}
+
+.attribute input {
+    text-align: center;
+    font-size: 22px;
+}
+
+.save {
+
+    position: fixed;
+
+    bottom: 20px;
+    right: 20px;
+
+    padding: 15px 22px;
+
+    box-shadow: 0 0 20px rgba(0,0,0,.5);
+}
+
+.status {
+    color: #69e391;
+    margin-top: 10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+☾ ARQUIVO SOMBRIO
+</div>
+
+<div>
+
+<span id="usuarioEmail"></span>
+
+<button id="btnSair">
+SAIR
+</button>
+
+</div>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Identidade</h2>
+
+<div class="grid">
+
+<div>
+<label>Nome</label>
+<input id="nome">
+</div>
+
+<div>
+<label>Idade</label>
+<input id="idade" type="number">
+</div>
+
+<div>
+<label>Nível</label>
+<input id="nivel" type="number" min="1" max="20">
+</div>
+
+<div>
+<label>Profissão</label>
+<input id="profissao">
+</div>
+
+<div>
+<label>Origem da Magia</label>
+
+<select id="origemMagia">
+
+<option>Sem magia</option>
+<option>Inato</option>
+<option>Pacto</option>
+
+</select>
+
+</div>
+
+<div>
+<label>Experiência</label>
+<input id="experiencia" type="number">
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>História</h2>
+
+<div class="grid">
+
+<div>
+<label>Personalidade</label>
+<textarea id="personalidade"></textarea>
+</div>
+
+<div>
+<label>História</label>
+<textarea id="historia"></textarea>
+</div>
+
+<div>
+<label>Objetivo</label>
+<textarea id="objetivo"></textarea>
+</div>
+
+<div>
+<label>Medo</label>
+<textarea id="medo"></textarea>
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Recursos</h2>
+
+<div class="grid">
+
+<div>
+<label>PV Máximo</label>
+<input id="PVMax" type="number">
+</div>
+
+<div>
+<label>PV Atual</label>
+<input id="PVAtual" type="number">
+</div>
+
+<div>
+<label>Sanidade Máxima</label>
+<input id="sanidadeMax" type="number">
+</div>
+
+<div>
+<label>Sanidade Atual</label>
+<input id="sanidadeAtual" type="number">
+</div>
+
+<div>
+<label>Defesa</label>
+<input id="defesa" type="number">
+</div>
+
+<div>
+<label>Adaptação</label>
+<input id="adaptacao" type="number">
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Atributos</h2>
+
+<div class="grid">
+
+<div class="attribute">
+<strong>FOR</strong>
+<input id="FOR" type="number">
+</div>
+
+<div class="attribute">
+<strong>AGI</strong>
+<input id="AGI" type="number">
+</div>
+
+<div class="attribute">
+<strong>VIG</strong>
+<input id="VIG" type="number">
+</div>
+
+<div class="attribute">
+<strong>INT</strong>
+<input id="INT" type="number">
+</div>
+
+<div class="attribute">
+<strong>PER</strong>
+<input id="PER" type="number">
+</div>
+
+<div class="attribute">
+<strong>VON</strong>
+<input id="VON" type="number">
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>Habilidades</h2>
+
+<textarea
+id="habilidades"
+placeholder="Liste as habilidades do personagem..."
+></textarea>
+
+</div>
+
+<div class="card">
+
+<h2>Poderes e Magia</h2>
+
+<textarea
+id="poderes"
+placeholder="Poderes, efeitos, limitações..."
+></textarea>
+
+<br><br>
+
+<label>Preço do Pacto</label>
+
+<textarea
+id="precoPacto"
+placeholder="Caso possua pacto..."
+></textarea>
+
+</div>
+
+<div class="card">
+
+<h2>Equipamentos</h2>
+
+<textarea
+id="equipamentos"
+placeholder="Itens, equipamentos, munição..."
+></textarea>
+
+</div>
+
+<div class="card">
+
+<h2>Rolagens</h2>
+
+<button onclick="iniciativa()">
+🎲 Iniciativa
+</button>
+
+<button onclick="teste()">
+🎲 Teste de atributo
+</button>
+
+<div id="resultado"
+style="margin-top:15px;font-size:20px">
+</div>
+
+</div>
+
+<div class="status" id="status"></div>
+
+</div>
+
+<button class="save" onclick="salvarFicha()">
+💾 SALVAR FICHA
+</button>
+
+<script type="module">
+
+import {
+    auth,
+    db,
+    doc,
+    getDoc,
+    setDoc,
+    signOut,
+    onAuthStateChanged
+} from "./firebase.js";
+
+let usuarioAtual = null;
+
+const campos = [
+    "nome",
+    "idade",
+    "nivel",
+    "profissao",
+    "origemMagia",
+    "experiencia",
+
+    "personalidade",
+    "historia",
+    "objetivo",
+    "medo",
+
+    "PVMax",
+    "PVAtual",
+
+    "sanidadeMax",
+    "sanidadeAtual",
+
+    "defesa",
+    "adaptacao",
+
+    "habilidades",
+    "poderes",
+    "precoPacto",
+    "equipamentos"
+];
+
+const atributos = [
+    "FOR",
+    "AGI",
+    "VIG",
+    "INT",
+    "PER",
+    "VON"
+];
+
+onAuthStateChanged(auth, async usuario => {
+
+    if (!usuario) {
+
+        window.location.href = "login.html";
+        return;
+    }
+
+    usuarioAtual = usuario;
+
+    document.getElementById("usuarioEmail")
+        .textContent = usuario.email;
+
+    await carregarFicha();
+
+});
+
+async function carregarFicha() {
+
+    const referencia =
+        doc(db, "fichas", usuarioAtual.uid);
+
+    const resultado =
+        await getDoc(referencia);
+
+    if (!resultado.exists()) return;
+
+    const dados = resultado.data();
+
+    campos.forEach(campo => {
+
+        const elemento =
+            document.getElementById(campo);
+
+        if (
+            elemento &&
+            dados[campo] !== undefined
+        ) {
+
+            elemento.value = dados[campo];
+        }
+
+    });
+
+    if (dados.atributos) {
+
+        atributos.forEach(attr => {
+
+            const elemento =
+                document.getElementById(attr);
+
+            if (elemento) {
+
+                elemento.value =
+                    dados.atributos[attr] ?? 0;
+            }
+
+        });
+
+    }
+
+}
+
+window.salvarFicha = async function() {
+
+    if (!usuarioAtual) return;
+
+    const dados = {};
+
+    campos.forEach(campo => {
+
+        const elemento =
+            document.getElementById(campo);
+
+        if (elemento) {
+
+            dados[campo] = elemento.value;
+        }
+
+    });
+
+    dados.atributos = {};
+
+    atributos.forEach(attr => {
+
+        dados.atributos[attr] =
+            Number(
+                document.getElementById(attr).value
+            ) || 0;
+
+    });
+
+    try {
+
+        await setDoc(
+            doc(db, "fichas", usuarioAtual.uid),
+            dados,
+            { merge: true }
+        );
+
+        document.getElementById("status")
+            .textContent =
+            "✓ Ficha salva com sucesso!";
+
+        setTimeout(() => {
+
+            document.getElementById("status")
+                .textContent = "";
+
+        }, 2500);
+
+    } catch (erro) {
+
+        document.getElementById("status")
+            .textContent =
+            "Erro ao salvar: " + erro.message;
+
+    }
+
+};
+
+document.getElementById("btnSair").onclick =
+    async () => {
+
+        await signOut(auth);
+
+        window.location.href = "login.html";
+
+    };
+
+window.iniciativa = function() {
+
+    const resultado =
+        Math.floor(Math.random() * 20) + 1;
+
+    document.getElementById("resultado")
+        .textContent =
+        `Iniciativa: ${resultado}`;
+
+};
+
+window.teste = function() {
+
+    const atributosTexto =
+        "FOR, AGI, VIG, INT, PER, VON";
+
+    const escolha =
+        prompt(
+            "Qual atributo?\n\n" +
+            atributosTexto
+        );
+
+    if (!escolha) return;
+
+    const atributo =
+        escolha.toUpperCase();
+
+    if (!atributos.includes(atributo)) {
+
+        alert("Atributo inválido.");
+        return;
+
+    }
+
+    const valor =
+        Number(
+            document.getElementById(atributo).value
+        ) || 0;
+
+    const d20 =
+        Math.floor(Math.random() * 20) + 1;
+
+    const total =
+        d20 + valor;
+
+    document.getElementById("resultado")
+        .textContent =
+        `Teste: ${d20} + ${valor} = ${total}`;
+
+};
+
+</script>
+
+</body>
+  </html>
