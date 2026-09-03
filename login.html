@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login — Arquivo Sombrio</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    background:
+        radial-gradient(circle at top, #24162e, #09070d 60%);
+
+    color: #eee;
+    font-family: Arial, sans-serif;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 92%;
+    max-width: 430px;
+
+    padding: 35px;
+
+    background: rgba(20,16,25,.96);
+
+    border: 1px solid #5e376e;
+    border-radius: 18px;
+
+    box-shadow:
+        0 0 40px rgba(125,55,160,.2);
+}
+
+h1 {
+    text-align: center;
+}
+
+.subtitle {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+
+    margin-bottom: 15px;
+
+    background: #0e0b12;
+    color: white;
+
+    border: 1px solid #4d3657;
+    border-radius: 9px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: #743d91;
+    color: white;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+button:hover {
+    background: #8d4fad;
+}
+
+.link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+a {
+    color: #c67bea;
+}
+
+#mensagem {
+    text-align: center;
+    margin-top: 15px;
+    color: #ff6b6b;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>☾ Arquivo Sombrio</h1>
+
+    <div class="subtitle">
+        ACESSO AO SISTEMA
+    </div>
+
+    <input
+        id="email"
+        type="email"
+        placeholder="E-mail"
+    >
+
+    <input
+        id="senha"
+        type="password"
+        placeholder="Senha"
+    >
+
+    <button id="btnLogin">
+        ENTRAR
+    </button>
+
+    <div id="mensagem"></div>
+
+    <div class="link">
+        Não possui uma conta?
+        <a href="cadastro.html">Criar conta</a>
+    </div>
+
+</div>
+
+<script type="module">
+
+import {
+    auth,
+    signInWithEmailAndPassword
+} from "./firebase.js";
+
+const email = document.getElementById("email");
+const senha = document.getElementById("senha");
+const mensagem = document.getElementById("mensagem");
+
+document.getElementById("btnLogin").onclick = async () => {
+
+    mensagem.textContent = "";
+
+    if (!email.value || !senha.value) {
+
+        mensagem.textContent =
+            "Digite seu e-mail e sua senha.";
+
+        return;
+    }
+
+    try {
+
+        await signInWithEmailAndPassword(
+            auth,
+            email.value,
+            senha.value
+        );
+
+        window.location.href = "index.html";
+
+    } catch (erro) {
+
+        if (
+            erro.code === "auth/invalid-credential" ||
+            erro.code === "auth/wrong-password" ||
+            erro.code === "auth/user-not-found"
+        ) {
+
+            mensagem.textContent =
+                "E-mail ou senha incorretos.";
+
+        } else {
+
+            mensagem.textContent =
+                erro.message;
+        }
+    }
+
+};
+
+</script>
+
+</body>
+</html>
